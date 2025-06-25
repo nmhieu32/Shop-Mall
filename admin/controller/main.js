@@ -1,10 +1,14 @@
 import ProductService from "../services/product-service.js";
 import Product from "../model/product.js";
+import Validation from "../model/validation.js";
 
 const product = new Product();
 const service = new ProductService();
+const validation = new Validation();
 
-const getEle = (id) => document.getElementById(id);
+export const getEle = (id) => {
+    return document.getElementById(id);
+}
 
 // Request để nhận danh sách sản phẩm
 const getProduct = () => {
@@ -50,11 +54,11 @@ const onDeleteProduct = (id) => {
     const promise = service.deleteProductAPI(id);
 
     promise
-        .then((result)=>{
+        .then((result) => {
             alert(`Delete ${result.data.name} success !`);
             getProduct();
         })
-        .catch((error)=> {
+        .catch((error) => {
             console.log(error);
         });
 };
@@ -71,6 +75,26 @@ const getValue = () => {
     const img = getEle("img").value;
     const desc = getEle("desc").value;
     const type = getEle("type").value;
+
+    let isValid = true;
+
+    isValid &= validation.checkEmpty(name, "tbname", "(*) Vui lòng nhập Tên")&& validation.checkLength(name, "tbname", "(*) Vui lòng nhập đúng độ dài kí tự từ 5 - 50 ký tự " ,5 , 50);
+
+    isValid &= validation.checkEmpty(price, "tbprice", "(*) Vui lòng nhập Giá") && validation.checkNumber(price, "tbprice", "(*) Vui lòng nhập đúng định dạng Số")&& validation.checkLength(price, "tbprice", "(*) Vui lòng nhập đúng độ dài kí tự từ 3 - 6 ký tự " ,3 , 6);
+
+    isValid &= validation.checkEmpty(screen, "tbscreen", "(*) Vui lòng nhập kích thước màn hình") && validation.checkLength(screen, "tbscreen", "(*) Vui lòng nhập đúng độ dài kí tự từ 3 - 10 ký tự " ,3 , 10);
+
+    isValid &= validation.checkEmpty(backCam, "tbbackCam", "(*) Vui lòng nhập thông số camera sau")&& validation.checkLength(backCam, "tbbackCam", "(*) Vui lòng nhập đúng độ dài kí tự từ 5 - 50 ký tự " ,5 , 50);
+
+    isValid &= validation.checkEmpty(frontCam, "tbfrontCam", "(*) Vui lòng nhập thông số camera trước") && validation.checkLength(frontCam, "tbfrontCam", "(*) Vui lòng nhập đúng độ dài kí tự từ 5 - 20 ký tự " ,5 , 20);
+
+    isValid &= validation.checkEmpty(img, "tbimg", "(*) Vui lòng nhập hình ảnh");
+
+    isValid &= validation.checkEmpty(desc, "tbdesc", "(*) Vui lòng nhập mô tả")&& validation.checkLength(desc, "tbdesc", "(*) Vui lòng nhập đúng độ dài kí tự từ 3 - 100 ký tự " ,3 , 100);
+
+    isValid &= validation.checkSelect("type", "tbtype", "(*) Vui lòng chọn dòng máy");
+
+    if (!isValid) return;
 
     const product = new Product("", name, price, screen, backCam, frontCam, img, desc, type);
 
@@ -95,20 +119,25 @@ getEle("addPhoneForm").onclick = () => {
     getEle("btnUpdate").style.display = "none";
     // clear Form
     resetForm();
+
+    // clear error
+    clearError();
 }
 
 // Add Product
 getEle("btnAddPhone").onclick = () => {
     const product = getValue();
-    
+
+    if (!product) return;
+
     const promise = service.addProductAPI(product);
     promise
-        .then((result)=> {
+        .then((result) => {
             alert(`Add product ${result.data.name} success`);
             getEle("btnClose").click();
             getProduct();
         })
-        .catch((error)=> {
+        .catch((error) => {
             console.log(error);
         });
 }
@@ -117,7 +146,7 @@ getEle("btnAddPhone").onclick = () => {
 const onEditroduct = (id) => {
     const promise = service.getProductByID(id);
     promise
-        .then((result)=>{
+        .then((result) => {
             const product = result.data;
             getEle("idProduct").value = product.id;
             getEle("name").value = product.name;
@@ -131,7 +160,7 @@ const onEditroduct = (id) => {
             getEle("type").value = product.type;
 
         })
-        .catch((error)=>{
+        .catch((error) => {
             console.log(error);
         });
 
@@ -143,7 +172,10 @@ const onEditroduct = (id) => {
 
     // Ẩn nút Thêm
     getEle("btnAddPhone").style.display = "none";
-    
+
+    // clear thông báo lỗi
+    clearError();
+
 };
 window.onEditroduct = onEditroduct;
 
@@ -152,7 +184,7 @@ getEle("btnUpdate").onclick = () => {
 
     const product = getValue();
     product.id = getEle("idProduct").value;
-    
+
     const promise = service.updateProductAPI(product);
     promise
         .then((result) => {
@@ -168,15 +200,15 @@ getEle("btnUpdate").onclick = () => {
 /**
  * Tim kiếm sản phẩm
  */
-getEle("keyword").addEventListener("keyup", ()=> {
+getEle("keyword").addEventListener("keyup", () => {
     const keyword = getEle("keyword").value;
     const promise = service.getListProductAPI();
     promise
-        .then((result)=>{
+        .then((result) => {
             const findProduct = service.searchProduct(keyword, result.data);
             renderListProduct(findProduct);
         })
-        .catch((error)=>{
+        .catch((error) => {
             console.log(error);
         });
 })
@@ -184,16 +216,23 @@ getEle("keyword").addEventListener("keyup", ()=> {
 /**
  * Filter Product
  */
-getEle("filter").addEventListener("change", ()=> {
+getEle("filter").addEventListener("change", () => {
     const value = getEle("filter").value;
 
     const promise = service.getListProductAPI();
     promise
-        .then((result)=>{
+        .then((result) => {
             const filter = service.filterProduct(result.data, value);
             renderListProduct(filter);
         })
-        .catch((error)=>{
+        .catch((error) => {
             console.log(error);
         });
 })
+
+const clearError = () => {
+    const error = document.querySelectorAll(".sp-thongbao");
+    error.forEach(span => {
+        span.innerHTML="";
+    });
+};
