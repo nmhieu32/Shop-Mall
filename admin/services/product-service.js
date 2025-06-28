@@ -64,24 +64,9 @@ class ProductService {
     filterProduct(data, value) {
         // clone mảng để ko thay đổi mảng gốc
         let arrFilter = [...data];
-        for (let i = 0; i < arrFilter.length - 1; i++) {
-            for (let j = i + 1; j < arrFilter.length; j++) {
-                if (value === "1") {
-                    if (arrFilter[i].price > arrFilter[j].price) {
-                        let temp = arrFilter[i];
-                        arrFilter[i] = arrFilter[j];
-                        arrFilter[j] = temp;
-                    }
-                }
-                else if (value === "2") {
-                    if (arrFilter[i].price < arrFilter[j].price) {
-                        let temp = arrFilter[j];
-                        arrFilter[j] = arrFilter[i];
-                        arrFilter[i] = temp;
-                    }
-                }
-            }
-        }
+        arrFilter.sort((a, b)=>{
+            return value === "1" ? a.price - b.price : b.price - a.price;   
+        });
         return arrFilter;
     }
 }
