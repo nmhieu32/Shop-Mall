@@ -44,7 +44,6 @@ class Cart {
                 alert("Số lượng sản phẩm không thể nhỏ hơn 1!");
                 return;
             }
-            alert(`Đã thay đổi số lượng sản phẩm ${item.name} thành công!`);
         }
     }
 
