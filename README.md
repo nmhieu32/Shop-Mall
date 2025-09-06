@@ -9,9 +9,13 @@ Shop-Mall là dự án web bán hàng trực tuyến, sử dụng mockAPI làm b
 
 Trang web hỗ trợ:
 Hiển thị danh sách sản phẩm
+
 Xem chi tiết sản phẩm
+
 Thêm sản phẩm vào giỏ hàng
+
 Xoá/cập nhật giỏ hàng
+
 Thanh toán (giả lập)
 
 # 🧱 Công nghệ sử dụng
@@ -23,11 +27,13 @@ Triển khai: Vercel
 
 # 📁 Cấu trúc thư mục
 /
+
 ├── admin/               # Giao diện quản lý sản phẩm
 
 ├── customer/            # Giao diện khách hàng
 
 ├── asset/               # Ảnh, CSS, JS tĩnh
+
 ├── index.html           # Trang chủ
 
 └── README.md            # File hướng dẫn
